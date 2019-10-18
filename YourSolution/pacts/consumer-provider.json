@@ -1,0 +1,54 @@
+{
+  "consumer": {
+    "name": "Consumer"
+  },
+  "provider": {
+    "name": "Provider"
+  },
+  "interactions": [
+    {
+      "description": "A invalid GET request for Date Validation with invalid date parameter",
+      "providerState": "There is data",
+      "request": {
+        "method": "get",
+        "path": "/api/provider",
+        "query": "validDateTime=lolz"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "message": "validDateTime is not a date or time"
+        }
+      }
+    },
+    {
+      "description": "A valid GET request for Date Validation with valid date parameter",
+      "providerState": "There is data",
+      "request": {
+        "method": "get",
+        "path": "/api/provider",
+        "query": "validDateTime=12/11/2010%2010:13:45"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "message": {
+            "test": "NO",
+            "validDateTime": "12-11-2010+10%3a13%3a45"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
