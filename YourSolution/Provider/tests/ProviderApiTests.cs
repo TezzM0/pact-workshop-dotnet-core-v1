@@ -36,15 +36,14 @@ namespace tests
         {
             // Arrange
             var config = new PactVerifierConfig
-            {
+            {                
+                PublishVerificationResults = true,
+                ProviderVersion = "681b9b1610a67f8bf237aaf2921ccaa311cffd05",
 
                 // NOTE: We default to using a ConsoleOutput,
                 // however xUnit 2 does not capture the console output,
                 // so a custom outputter is required.
-                Outputters = new List<IOutput>
-                                {
-                                    new XUnitOutput(_outputHelper)
-                                },
+                Outputters = new List<IOutput> { new XUnitOutput(_outputHelper) },
 
                 // Output verbose verification logs to the test output
                 Verbose = true
@@ -55,7 +54,7 @@ namespace tests
             pactVerifier.ProviderState($"{_pactServiceUri}/provider-states")
                 .ServiceProvider("Provider", _providerUri)
                 .HonoursPactWith("Consumer")
-                .PactUri(@"..\..\..\..\..\pacts\consumer-provider.json")
+                .PactUri(@"https://test_als_terry.pact.dius.com.au/pacts/provider/Provider/consumer/Consumer/latest", new PactUriOptions("XUxGLRjlW2wM-CBBFK0P9w"))
                 .Verify();
         }
 
