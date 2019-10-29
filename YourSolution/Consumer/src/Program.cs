@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Consumer
@@ -27,10 +28,23 @@ namespace Consumer
                 Console.WriteLine("-------------------");
             }
 
-            Console.WriteLine("Validating date...");
-            var result = ConsumerApiClient.ValidateDateTimeUsingProviderApi(dateTimeToValidate, baseUri).GetAwaiter().GetResult();
-            var resultContentText = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            Console.WriteLine(resultContentText);
+            while (true)
+            {
+                Thread.Sleep(1500);
+                Console.WriteLine("Validating date...");
+                var result = ConsumerApiClient.ValidateDateTimeUsingProviderApi(dateTimeToValidate, baseUri)
+                    .GetAwaiter().GetResult();
+                var resultContentText = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                Console.WriteLine(resultContentText);
+                if (Console.KeyAvailable)
+                {
+                    if (Console.ReadKey().Key == ConsoleKey.Escape)
+                    {
+                        break;
+                    }
+                }
+            }
+
             Console.WriteLine("...Date validation complete. Goodbye.");
         }
 

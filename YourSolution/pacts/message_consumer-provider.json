@@ -1,0 +1,21 @@
+{
+  "provider": {
+    "name": "provider"
+  },
+  "consumer": {
+    "name": "message consumer"
+  },
+  "messages": [
+    {
+      "description": "A message",
+      "providerState": "There is data",
+      "contents": {
+        "Name": "Provider"
+      },
+      "metaData": {}
+    }
+  ],
+  "metadata": {
+    "pactSpecificationVersion": "3.0"
+  }
+}
