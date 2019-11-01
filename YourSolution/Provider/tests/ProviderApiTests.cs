@@ -4,6 +4,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using PactNet;
 using PactNet.Infrastructure.Outputters;
+using PactNetMessages.Mocks.MockMq.Models;
+using provider;
+using tests.Middleware;
 using tests.XUnitHelpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,7 +41,7 @@ namespace tests
             var config = new PactVerifierConfig
             {                
                 PublishVerificationResults = true,
-                ProviderVersion = "681b9b1610a67f8bf237aaf2921ccaa311cffd05",
+                ProviderVersion = "c2f8f069f69dd979039a18b0c7fa5ce161db93b3",
 
                 // NOTE: We default to using a ConsoleOutput,
                 // however xUnit 2 does not capture the console output,
@@ -56,6 +59,42 @@ namespace tests
                 .HonoursPactWith("Consumer")
                 .PactUri(@"https://test_als_terry.pact.dius.com.au/pacts/provider/Provider/consumer/Consumer/latest", new PactUriOptions("XUxGLRjlW2wM-CBBFK0P9w"))
                 .Verify();
+        }
+
+        [Fact]
+        public void EnsureMessageProviderHonoursPactWithMessageConsumer()
+        {
+
+            var config = new PactNetMessages.PactVerifierConfig
+            {
+                PublishVerificationResults = true,
+                ProviderVersion = "c2f8f069f69dd979039a18b0c7fa5ce161db93b3",
+            };
+
+            using (var pactVerifier =
+                new PactNetMessages.PactVerifier(() => { }, () => { }, config))
+            {
+                pactVerifier
+                    .ProviderState("There is data", setUp: SetUpScenario);
+
+                pactVerifier
+                    .MessageProvider("Provider")
+                    .HonoursPactWith("message consumer")
+                    .PactUri(
+                        @"https://test_als_terry.pact.dius.com.au/pacts/provider/Provider/consumer/message%20consumer/latest",
+                        new PactNetMessages.PactUriOptions("XUxGLRjlW2wM-CBBFK0P9w"))
+                    .Verify();
+            }
+        }
+
+        private Message SetUpScenario()
+        {
+            var messageProducer = new MessageProducer();
+            ProviderStateHelper.AddData();
+            return new Message()
+            {
+                Contents = messageProducer.ProduceMessage()
+            };
         }
 
         #region IDisposable Support

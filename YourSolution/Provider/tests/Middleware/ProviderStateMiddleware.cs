@@ -23,36 +23,16 @@ namespace tests.Middleware
             {
                 {
                     "There is no data",
-                    RemoveAllData
+                    ProviderStateHelper.RemoveAllData
                 },
                 {
                     "There is data",
-                    AddData
+                    ProviderStateHelper.AddData
                 }
             };
         }
 
-        private void RemoveAllData()
-        {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), @"../../../../../data");
-            var deletePath = Path.Combine(path, "somedata.txt");
-
-            if (File.Exists(deletePath))
-            {
-                File.Delete(deletePath);
-            }
-        }
-
-        private void AddData()
-        {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), @"../../../../../data");
-            var writePath = Path.Combine(path, "somedata.txt");
-
-            if (!File.Exists(writePath))
-            {
-                File.Create(writePath);
-            }
-        }
+        
 
         public async Task Invoke(HttpContext context)
         {

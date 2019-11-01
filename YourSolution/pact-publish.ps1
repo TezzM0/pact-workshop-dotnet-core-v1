@@ -9,7 +9,9 @@ param(
 
     $templateUrl = "$pactBroker/pacts/provider/:provider/consumer/:consumer/version/:version",
 
-    $tagTemplateUrl = "$pactBroker/pacticipants/:consumer/versions/:version/tags/:tag"
+    $tagTemplateUrl = "$pactBroker/pacticipants/:consumer/versions/:version/tags/:tag",
+
+    $authToken
 )
 
 $ErrorActionPreference = "Stop"
@@ -63,14 +65,17 @@ $metadata = Get-Content $buildMetadataFilePath | Out-String | ConvertFrom-Json
 $version = Get-CompatibleVersionFromMetadata $metadata
 $tag = Get-TagFromMetadata $metadata
 
-$pactContent = Get-Content $pacts[0].FullName | Out-String 
-$pactJson = $pactContent | ConvertFrom-Json
-$consumer = $pactJson.consumer.name
-$encodedConsumer = [Uri]::EscapeDataString($consumer)
+$headers =  @{
+    "Content-Type"= "application/json" 
+    "Accept"= "application/hal+json"
+    "Authorization"= "Bearer " + $authToken
+}
 
 foreach($pact in $pacts){
     $content = Get-Content $pact.FullName | Out-String 
     $json = $content | ConvertFrom-Json
+    $consumer = $json.consumer.name
+    $encodedConsumer = [Uri]::EscapeDataString($consumer)
     
     $provider = $json.provider.name
     
@@ -83,17 +88,12 @@ foreach($pact in $pacts){
     $url = (($templateUrl -Replace ":provider", $encodedProvider) -Replace ":consumer", $encodedConsumer) -Replace ":version", $version
 
     Write-Host "`t$url"
-    Invoke-RestMethod $url -Body $content -Method "PUT" -Headers @{"Content-Type"= "application/json"}
+    Invoke-RestMethod $url -Body $content -Method "PUT" -Headers $headers
 }
 
 $tagUrl = (($tagTemplateUrl -Replace ":consumer", $encodedConsumer) -Replace ":tag", $encodedBranch) -Replace ":version", $version
 
 Write-Host "Tagging pact consumer $($consumer) with tag $($tag) for version $($version)"
 Write-Host "`t$tagUrl"   
-
-$headers =  @{
-    "Content-Type"= "application/json" 
-    "Accept"= "application/hal+json"
-}
 
 Invoke-RestMethod $tagUrl -Method "PUT" -Headers $headers

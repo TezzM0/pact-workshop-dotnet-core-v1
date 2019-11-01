@@ -18,13 +18,12 @@ namespace Provider
     {
         public static async Task Main(string[] args)
         {
-            var messageSender = new MessageProducer();
+            var messageSender = new MessageSender();
             await messageSender.SetupNServiceBusAsync().ConfigureAwait(false);
-            Task.Run(messageSender.SendMessagesIfDataExists);
+            messageSender.MessageProducer = new MessageProducer();
+            Task.Run(() => { while (true) { messageSender.SendMessages(); } });
             BuildWebHost(args).Run();
         }
-
-        
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)

@@ -19,7 +19,7 @@ namespace tests
 
             PactMessageBuilder = new PactMessageBuilder(pactConfig);
 
-            PactMessageBuilder.ServiceConsumer("message consumer").HasPactWith("provider");
+            PactMessageBuilder.ServiceConsumer("message consumer").HasPactWith("Provider");
         }
 
         #region IDisposable Support

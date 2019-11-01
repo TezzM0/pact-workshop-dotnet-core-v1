@@ -1,6 +1,6 @@
 {
   "provider": {
-    "name": "provider"
+    "name": "Provider"
   },
   "consumer": {
     "name": "message consumer"
